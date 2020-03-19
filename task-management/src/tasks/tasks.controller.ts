@@ -1,44 +1,54 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TaskStatus } from './tasks.status.enum';
 import { CreateTaskDto } from './Dto/tasks.dto';
 import { GetTasksFilterDto } from './Dto/get-tasks-filter.dto';
 import { TaskStatusValidationPipe } from './Pipes/task-status-validation.pipe';
 import { Task } from './task.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/auth/user.entity';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
     constructor(private tasks: TasksService) {}
 
-    // @Get()
-    // getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
-    //     if(Object.keys(filterDto).length != 0) {
-    //         return this.tasks.getTasksWithFilters(filterDto)
-    //     }
-
-    //     return this.tasks.getAllTasks()
-    // }
-
-    @Get(':id')
-    getTaskById( @Param('id', ParseIntPipe) id: number ): Promise<Task> {
-        return this.tasks.getTaskById(id)
+    @Get()
+    getTasks(
+        @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+        @Req() req
+        ): Promise<Task[]> {
+        return this.tasks.getTasks(filterDto, req.user)
     }
 
-    // @Delete(':id')
-    // deleteTask( @Param('id') id: string ): void {
-    //     this.tasks.deleteTask(id)
-    // } 
+    @Get(':id')
+    getTaskById(
+        @Param('id', ParseIntPipe) id: number,
+        @Req() req
+        ): Promise<Task> {
+        return this.tasks.getTaskById(id, req.user)
+    }
 
-    // @Post()
-    // @UsePipes(ValidationPipe)
-    // createTask( @Body() newTask :CreateTaskDto ): Task {
-    //     return this.tasks.createTask(newTask)
-    // }
+    @Delete(':id')
+    deleteTask( @Param('id', ParseIntPipe) id: number ): Promise<number> {
+        return this.tasks.deleteTask(id)
+    } 
 
-    // @Patch(':id/status')
-    // updateTaskStatus( 
-    //     @Param('id') id: string, 
-    //     @Body('status', TaskStatusValidationPipe ) status: TaskStatus ): Task {
-    //     return this.tasks.updateTaskStatus( id, status )
-    // }
+    @Post()
+    @UsePipes(ValidationPipe)
+    createTask( 
+        @Body() newTask :CreateTaskDto,
+        @Req() req
+        ): Promise<Task> {
+        return this.tasks.createTask(newTask, req.user)
+    }
+
+    @Patch(':id/status')
+    updateTaskStatus( 
+        @Param('id', ParseIntPipe) id: number, 
+        @Body('status', TaskStatusValidationPipe ) status: TaskStatus,
+        @Req() req
+        ): Promise<Number> {
+        return this.tasks.updateTaskStatus( id, req.user, status )
+    }
 }
