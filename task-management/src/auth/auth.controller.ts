@@ -7,12 +7,12 @@ import { AuthCredentialsDto } from './Dto/auth-credentials.dto';
 export class AuthController {
     constructor(private auth: AuthService) {}
 
-    @Post('/singup')
+    @Post('/signup')
     singUp(@Body(ValidationPipe) authCredentials: AuthCredentialsDto): Promise<void> {
         return this.auth.singUp(authCredentials)
     }
 
-    @Post('/singin')
+    @Post('/signin')
     singIn(@Body(ValidationPipe) authCredentials: AuthCredentialsDto): Promise<{ accessToken: string }> {
         return this.auth.singIn(authCredentials)
     }

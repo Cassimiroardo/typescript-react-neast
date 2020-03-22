@@ -1,7 +1,6 @@
 import React from 'react';
 import { Drawer } from '@material-ui/core'
 import DrawerList from '../DrawerList'
-import { BrowserRouter } from 'react-router-dom';
 
 interface Prop {
     status: boolean,

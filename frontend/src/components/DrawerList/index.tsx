@@ -21,9 +21,14 @@ function DrawerList({ closeFunction }: Prop) {
       closeFunction()
   }
 
+  function logOff() {
+      localStorage.removeItem('token')
+      document.location.reload()
+  }
+
   const logged = (
     <>
-    <Link to="/createtask" style={linkStyle}>
+    <Link to="/create" style={linkStyle}>
         <ListItem button onClick={handleDrawerClose}>
             <Avatar className={styles.avatar}>
                 <PeopleIcon />
@@ -31,12 +36,18 @@ function DrawerList({ closeFunction }: Prop) {
             <ListItemText primary="Criar tarefa" secondary="crie uma tarefa e adicione a sua lista!" className={styles.margin}/>
         </ListItem>
     </Link>
-    <Link to="/alltasks" style={linkStyle}>
+    <Link to="/list" style={linkStyle}>
         <ListItem button onClick={handleDrawerClose}>
             <Avatar className={styles.avatar}>
                 <WorkIcon/>
             </Avatar>
             <ListItemText primary="Ver minhas tarefas" secondary="veja sua lista com todas as suas tarefas" className={styles.margin}/>
+        </ListItem>
+    </Link>
+    <Divider />
+    <Link to="/signin">
+        <ListItem button onClick={logOff}>
+            <ListItemText primary="Sair da conta" className={styles.close}/>
         </ListItem>
     </Link>
     </>
@@ -60,15 +71,14 @@ function DrawerList({ closeFunction }: Prop) {
             <ListItemText primary="Cadastrar-se" secondary="crie uma conta agora!" className={styles.margin}/>
         </ListItem>
         </Link>
+        <Divider />
     </>
   )
 
   return (
         <List component="nav">
 
-            { localStorage.getItem('usertoken') ? logged : notLogged  }
-
-            <Divider />
+            { localStorage.getItem('token') ? logged : notLogged  }
 
             <ListItem button onClick={handleDrawerClose}>
                 <ListItemText primary="Fechar" className={styles.close}/>
